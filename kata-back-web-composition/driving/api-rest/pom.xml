@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>kata-back-web-composition-api-rest</artifactId>
+  <packaging>jar</packaging>
+  <name>kata-back-web-composition-api-rest</name>
+
+  <parent>
+    <groupId>com.mercadona.kata.composition</groupId>
+    <artifactId>kata-back-web-composition</artifactId>
+    <version>1.0.0</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <properties>
+    <example.api.version>2.2.2</example.api.version>
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>com.mercadona.kata.composition</groupId>
+      <artifactId>kata-back-web-composition-application</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.mercadona.framework.cna</groupId>
+      <artifactId>fwkcna-starter-web</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.mercadona.framework.cna</groupId>
+      <artifactId>fwkcna-starter-security</artifactId>
+    </dependency>
+
+    <dependency>
+			<groupId>com.mercadona.framework.cna.api.examples</groupId>
+			<artifactId>examples-api-server-cna-17</artifactId>
+			<version>${example.api.version}</version>
+		</dependency>
+
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>2.2.8</version>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>6.4.0</version> <!-- versión moderna, compatible -->
+        <executions>
+
+          <!-- 🎯 Generar artefactos del servidor (Spring Boot basado en OpenAPI 3) -->
+          <execution>
+            <id>generate-server</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/src/main/resources/composition-openapi-v3.yaml</inputSpec> <!-- Debe ser OpenAPI 3.x -->
+              <generatorName>spring</generatorName>
+              <library>spring-boot</library> <!-- Spring Boot server -->
+              <apiPackage>com.example.api</apiPackage>
+              <modelPackage>com.example.model</modelPackage>
+              <configOptions>
+                <interfaceOnly>true</interfaceOnly> <!-- Solo interfaces -->
+                <useTags>true</useTags> <!-- organiza los endpoints en base a tags de OpenAPI -->
+                <dateLibrary>java8</dateLibrary> <!-- java.time.* -->
+              </configOptions>
+              <additionalProperties>
+                <javaVersion>17</javaVersion>
+                <openApiNullable>false</openApiNullable> <!-- Mejor compatibilidad con Java nativo -->
+              </additionalProperties>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>add-openapi-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+
+
+</project>

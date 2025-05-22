@@ -1,0 +1,190 @@
+openapi: 3.0.1
+info:
+  title: Product Management API
+  description: Contract-first API definition for managing providers
+  version: 1.0.0
+tags:
+  - name: Products
+    description: Products Controller
+paths:
+  /providers/{id}/products:
+    post:
+      tags:
+        - Products
+      summary: Create a product for a given provider
+      description: Adds a new product under the specified provider
+      operationId: createProductInBd
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Provider ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+      responses:
+        '200':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResourceResponse'
+      security:
+        - adfs: [ ]
+      x-mercadona-security:
+        operationgroups:
+          - DCNA_POST_AddProductToProvider
+
+  /providers/{id}/products/{productId}:
+    get:
+      tags:
+        - Products
+      summary: Get a product from a provider
+      description: Retrieves a product by its ID under the given provider
+      operationId: getProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Provider ID
+          schema:
+            type: integer
+        - name: productId
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResourceResponse'
+      security:
+        - adfs: [ ]
+      x-mercadona-security:
+        operationgroups:
+          - DCNA_GET_ProductById
+
+    delete:
+      tags:
+        - Products
+      summary: Delete a product from a provider
+      description: Deletes a product by its ID under the given provider
+      operationId: deleteProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Provider ID
+          schema:
+            type: integer
+        - name: productId
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Product deleted
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResourceResponse'
+      security:
+        - adfs: [ ]
+      x-mercadona-security:
+        operationgroups:
+          - DCNA_DELETE_ProductById
+components:
+  schemas:
+    ProductRequest:
+      type: object
+      required: [ name, price, calories, category, available ]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+          format: float
+        calories:
+          type: integer
+        category:
+          type: string
+        available:
+          type: boolean
+        providerId:
+          type: integer
+
+    ProductResponse:
+      type: object
+      required: [ name, price, calories, category, available ]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+          format: float
+        calories:
+          type: integer
+        category:
+          type: string
+        available:
+          type: boolean
+        providerId:
+          type: integer
+
+    ErrorResourceResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            description:
+              type: string
+            details:
+              type: array
+              items:
+                type: string
+
+  securitySchemes:
+    adfs:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: ""
+          scopes: { }
+    aad:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: ""
+          scopes: { }

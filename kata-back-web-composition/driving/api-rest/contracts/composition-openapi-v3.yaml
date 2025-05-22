@@ -1,0 +1,238 @@
+
+openapi: 3.0.1
+info:
+  title: Provider & Product Management API
+  description: Contract-first API definition for managing providers and their products
+  version: 1.0.0
+tags:
+  - name: Providers
+    description: Endpoints for managing providers
+  - name: Products
+    description: Endpoints for managing products
+paths:
+  /providers:
+    post:
+      tags:
+        - Providers
+      summary: Create a new provider
+      description: Adds a new provider to the system
+      operationId: createProvider
+      parameters:
+        - name: name
+          in: query
+          required: true
+          description: Name of the provider
+          schema:
+            type: string
+        - name: city
+          in: query
+          description: City of the provider
+          schema:
+            type: string
+        - name: postalCode
+          in: query
+          description: Postal code of the provider
+          schema:
+            type: string
+        - name: address
+          in: query
+          description: Full address of the provider
+          schema:
+            type: string
+        - name: nif
+          in: query
+          description: Unique NIF (eight digits and a capital letter)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Provider created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResourceResponse'
+      security:
+        - adfs: []
+      x-mercadona-security:
+        operationgroups:
+          - DCNA_POST_CreateProvider
+
+  /providers/{id}/products:
+    post:
+      tags:
+        - Products
+      summary: Create a product for a given provider
+      description: Adds a new product under the specified provider
+      operationId: createProductInBd
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Provider ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResourceResponse'
+      security:
+        - adfs: []
+      x-mercadona-security:
+        operationgroups:
+          - DCNA_POST_AddProductToProvider
+
+  /providers/{id}/products/{productId}:
+    get:
+      tags:
+        - Products
+      summary: Get a product from a provider
+      description: Retrieves a product by its ID under the given provider
+      operationId: getProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Provider ID
+          schema:
+            type: integer
+        - name: productId
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResourceResponse'
+      security:
+        - adfs: []
+      x-mercadona-security:
+        operationgroups:
+          - DCNA_GET_ProductById
+
+    delete:
+      tags:
+        - Products
+      summary: Delete a product from a provider
+      description: Deletes a product by its ID under the given provider
+      operationId: deleteProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Provider ID
+          schema:
+            type: integer
+        - name: productId
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Product deleted
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResourceResponse'
+      security:
+        - adfs: []
+      x-mercadona-security:
+        operationgroups:
+          - DCNA_DELETE_ProductById
+
+components:
+  schemas:
+    Provider:
+      type: object
+      required: [name, city, postalCode, address, nif]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        address:
+          type: string
+        nif:
+          type: string
+
+    Product:
+      type: object
+      required: [name, price, calories, category, available]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+          format: float
+        calories:
+          type: integer
+        category:
+          type: string
+        available:
+          type: boolean
+        providerId:
+          type: integer
+
+    ErrorResourceResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            description:
+              type: string
+            details:
+              type: array
+              items:
+                type: string
+
+  securitySchemes:
+    adfs:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: ""
+          scopes: {}

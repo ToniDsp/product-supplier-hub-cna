@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.mercadona.kata.composition</groupId>
+    <artifactId>kata-back-web-composition</artifactId>
+    <version>1.0.0</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <packaging>jar</packaging>
+
+  <artifactId>webclient</artifactId>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webflux</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>2.2.8</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>3.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.mercadona.kata.composition</groupId>
+      <artifactId>kata-back-web-composition-application</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.openapitools</groupId>
+      <artifactId>jackson-databind-nullable</artifactId>
+      <version>0.2.6</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>5.12.2</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>6.4.0</version> <!-- versión moderna, compatible -->
+        <executions>
+          <!-- 🎯 Generar artefactos del cliente (Java WebClient para OpenAPI 3) -->
+          <execution>
+            <id>product-client</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/src/main/resources/products-openapi-v3.yaml</inputSpec> <!-- Mismo spec OpenAPI 3 -->
+              <generatorName>java</generatorName> <!-- Cliente Java puro -->
+              <library>webclient</library> <!-- O puedes usar webclient si prefieres reactivo -->
+              <apiPackage>com.product.example.client.api</apiPackage>
+              <modelPackage>com.product.example.client.model</modelPackage>
+              <configOptions>
+                <useRuntimeException>true</useRuntimeException> <!-- Manejo moderno de errores -->
+                <dateLibrary>java8</dateLibrary>
+              </configOptions>
+              <additionalProperties>
+                <javaVersion>17</javaVersion>
+                <openApiNullable>false</openApiNullable> <!-- Evita usar la anotación innecesaria de OpenApiNullable -->
+              </additionalProperties>
+            </configuration>
+          </execution>
+          <execution>
+            <id>providers-client</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/src/main/resources/providers-openapi-v3.yaml</inputSpec> <!-- Mismo spec OpenAPI 3 -->
+              <generatorName>java</generatorName> <!-- Cliente Java puro -->
+              <library>webclient</library> <!-- O puedes usar webclient si prefieres reactivo -->
+              <apiPackage>com.providers.example.client.api</apiPackage>
+              <modelPackage>com.providers.example.client.model</modelPackage>
+              <configOptions>
+                <useRuntimeException>true</useRuntimeException> <!-- Manejo moderno de errores -->
+                <dateLibrary>java8</dateLibrary>
+              </configOptions>
+              <additionalProperties>
+                <javaVersion>17</javaVersion>
+                <openApiNullable>false</openApiNullable> <!-- Evita usar la anotación innecesaria de OpenApiNullable -->
+              </additionalProperties>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>add-openapi-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+
+</project>

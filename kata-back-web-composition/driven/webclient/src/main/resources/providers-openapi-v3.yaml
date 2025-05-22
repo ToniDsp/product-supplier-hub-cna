@@ -1,0 +1,138 @@
+openapi: 3.0.1
+info:
+  title: Provider Management API
+  description: Contract-first API definition for managing  providers
+  version: 1.0.0
+tags:
+  - name: Providers
+    description: Providers Controller
+paths:
+  /providers:
+    post:
+      tags:
+        - Providers
+      summary: Create a new provider
+      description: Adds a new provider to the system
+      operationId: createProvider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderRequest'
+
+      responses:
+        '200':
+          description: Provider created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResourceResponse'
+      security:
+        - adfs: [ ]
+      x-mercadona-security:
+        operationgroups:
+          - DCNA_POST_CreateProvider
+  /providers/{id}:
+    get:
+      tags:
+        - Providers
+      summary: Returns a provider
+      description: given a provider id returns the provider from the system
+      operationId: getProviderById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Provider ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Provider found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderResponse'
+        '404':
+          description: No provider found for the given id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResourceResponse'
+      security:
+        - adfs: []
+      x-mercadona-security:
+        operationgroups:
+          -DCNA_GET_ProviderById
+
+components:
+  schemas:
+    ProviderRequest:
+      type: object
+      required: [ name, city, postalCode, address, nif ]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        address:
+          type: string
+        nif:
+          type: string
+
+    ProviderResponse:
+      type: object
+      required: [ name, city, postalCode, address, nif ]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        address:
+          type: string
+        nif:
+          type: string
+
+    ErrorResourceResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            description:
+              type: string
+            details:
+              type: array
+              items:
+                type: string
+
+  securitySchemes:
+    adfs:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: ""
+          scopes: { }
+    aad:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: ""
+          scopes: { }

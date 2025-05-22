@@ -1,0 +1,14 @@
+metadata:
+  labels:
+    app: examples
+    description: Examples Controller
+    title: Quickstart service demo
+spec:
+  deploy:
+    apiFileName: composition-openapi-v3.yaml
+    type:
+      fwkSpringBoot:
+        groupId: com.mercadona.kata.web-composition
+        artifactId: example-api
+        package: com.mercadona.kata.api.web-composition
+        interfacesWithTags: false
